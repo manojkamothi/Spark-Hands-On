@@ -1,6 +1,3 @@
-hdfs dfs -put /home/manoj/hadoop-work/Intellipat-Hadoop/Ecosystems_Excersize_MK/Spark/mk-handson/AirlinesProject/airports.csv /user/training/data_sets/
-
-
 -> Using Databricks CSV parsing library
 
 Open Spark shell with Databricks library
@@ -12,7 +9,7 @@ spark-shell --packages com.databricks:spark-csv_2.10:1.0.3
 val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 import sqlContext.implicits._ 
 
-val airportDF = sqlContext.load("com.databricks.spark.csv", Map("path" -> "hdfs://localhost:8020/user/training/data_sets/airports.csv", "header" -> "true"))
+val airportDF = sqlContext.load("com.databricks.spark.csv", Map("path" -> "--path of CSV -airports.csv", "header" -> "true"))
 
 airportDF.show
 
@@ -110,6 +107,6 @@ scala> val NorthWestAirportsDF=sqlContext.sql("select AirportID, Name, Latitude,
 
 And save it to CSV file
 
-scala> NorthWestAirportsDF.save("com.databricks.spark.csv", org.apache.spark.sql.SaveMode.ErrorIfExists, Map("path" -> "hdfs://localhost:8020/users/training/results/airportprojects","header"->"true"))
+scala> NorthWestAirportsDF.save("com.databricks.spark.csv", org.apache.spark.sql.SaveMode.ErrorIfExists, Map("path" -> "---HDFS SAVE PATH /airportprojects","header"->"true"))
 
 ------------------------------ACTION ENDS-------------------------------------------
