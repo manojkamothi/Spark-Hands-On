@@ -1,4 +1,4 @@
-val rawData = sc.textFile("hdfs://localhost:8020/user/training/ml-100k/u.data")
+val rawData = sc.textFile("u.data file location")
 
 rawData.first()
 
@@ -24,7 +24,7 @@ val topKRecs = model.recommendProducts(userId, k)
 
 println(topKRecs.mkString("\n"))
 
-val movies = sc.textFile("hdfs://localhost:8020/user/training/ml-100k/u.item")
+val movies = sc.textFile("u.item file location")
 val titles = movies.map(line => line.split("\\|").take(2)).map(array => (array(0.toInt), array(1))).collectAsMap()
 
 val moviesForUser = ratings.keyBy(_.user).lookup(789)
