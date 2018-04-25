@@ -1,0 +1,33 @@
+// running saprk application in local mode
+
+use the below conf parameters in spark-shell / spark-submit 
+
+--master local[K]
+run Spark locally with K worker threads (ideally, set this to the number of cores on your machine)
+
+
+// running spark application in cluster mode 
+ USING Spark master
+
+--master spark://HOST:PORT
+
+eg: --master spark://hadoop:7077
+
+configurations required:
+1)start spark master
+cd /usr/local/spark/
+sudo mkdir logs
+sudo chmod 777 -R logs
+cd  /usr/local/spark/sbin/
+./start-master.sh
+
+in the browser open <ip>:8081
+
+using mesos
+--master mesos://HOST:PORT
+
+using YARN
+--master yarn 
+Connect to a YARN cluster in client or cluster mode depending on the value of --deploy-mode
+
+

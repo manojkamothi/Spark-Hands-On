@@ -1,0 +1,66 @@
+//install kafka in your cloudera VM
+
+//create a repo file in the below given location
+
+sudo nano /etc/yum.repos.d/cdh-kafka.repos
+
+//add the beloe given lines in the file and save it
+
+[cloudera-kafka]
+# Packages for Cloudera's Distribution for kafka, Version 1, on RedHat	or CentOS 6 x86_64
+name=Cloudera's Distribution for kafka, Version 1
+baseurl=http://archive.cloudera.com/kafka/redhat/6/x86_64/kafka/1/
+gpgkey = http://archive.cloudera.com/kafka/redhat/6/x86_64/kafka/RPM-GPG-KEY-cloudera    
+gpgcheck = 1
+
+
+//then simply install kafka using the below given command
+
+sudo yum install -y kafka-server
+
+//start your kafka server
+
+sudo /etc/init.d/kafka-server start
+
+//Test the connectivity of Kafka
+
+nc -vz localhost 9092 (default port for kafka is 9092)
+Connection to localhost 9092 port [tcp/XmlIpcRegSvc] succeeded!
+
+-----------------------------------------------------------------------------------------------
+create kafka Topic
+-----------------
+kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic testKafka
+
+------------------------
+delete kafka topic 
+----------------------
+kafka-topics --delete --zookeeper localhost:2181 --topic testKafka
+
+-------------------------------
+list all topics from Kafka
+----------------------------------
+kafka-topics --zookeeper localhost:2181 --list
+
+---------------------------------
+describe a topic from kafka
+-------------------------------
+kafka-topics --zookeeper localhost:2181 --describe --topic kafkaTest
+
+---------------------
+send message to kafka using console producer
+--------------------------------------------
+kafka-console-producer --broker-list localhost:9092 --topic testKafka
+
+-------------------------
+receive message from Kafka
+---------------------------
+kafka-console-consumer --zookeeper localhost:2181 --topic testKafka
+
+//receive all messages from kafka topic from beginning
+kafka-console-consumer --zookeeper localhost:2181 --topic testKafka --from-beginning
+--------------------
+alter kafka topic
+-------------------
+kafka-topics --alter --zookeeper localhost:2181 --partitions 2  --topic testKafka
+

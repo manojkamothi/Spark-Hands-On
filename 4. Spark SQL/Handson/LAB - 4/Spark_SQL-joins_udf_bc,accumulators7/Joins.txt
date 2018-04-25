@@ -1,0 +1,106 @@
+
+spark-shell --packages com.databricks:spark-csv_2.10:1.5.0
+
+//Joins
+
+//load SampleData
+
+val passengersDF = sqlContext.read.format("com.databricks.spark.csv").option("inferSchema","true").option("header","true").load("/user/cloudera/datasets/passengers.csv")
+
+passengersDF.registerTempTable("passengers")
+
+
+val gensubDF = sqlContext.read.format("com.databricks.spark.csv").option("inferSchema","true").option("header","true").load("/user/cloudera/datasets/gender_submission.csv")
+
+gensubDF.registerTempTable("gensub")
+
+//FULL JOIN
+-------------------
+//Full Join will give all columns from joining tables
+
+passengersDF.join(gensubDF).show
+//or
+sqlContext.sql("select * from passengers p join gensub").show
+
+//Inner Join :
+--------------
+//Inner join will give matched columns from table a and table B , on the basis of given column condition
+
+passengersDF.join(gensubDF,passengersDF("PassengerId") === gensubDF("PassengerId"),"inner").show
+//or
+sqlContext.sql("select * from passengers p join gensub g on p.PassengerId = g.PassengerId").show
+
+//Left JOIN or LEFT OUTER JOIN
+------------------------------------
+
+//Left join or left outer join will give all columns from left table and matching columns 
+from right table , on the basis of given column condition. Non matching columns from right 
+Table shown as null.
+
+passengersDF.as("p").join(gensubDF.as("g"),passengersDF("PassengerId") === gensubDF("PassengerId"),"left").show
+//or
+sqlContext.sql("select * from passengers p left join gensub g on p.PassengerId = g.PassengerId").show
+
+//RIGHT JOIN or RIGHT OUTER JOIN
+-------------------------------------
+//Right join or right outer join will give all columns from right table and matching columns 
+from left table , on the basis of given column condition. Non matching columns from left
+Table shown as null.
+
+
+passengersDF.as("p").join(gensubDF.as("g"),passengersDF("PassengerId") === gensubDF("PassengerId"),"right").show
+//or
+sqlContext.sql("select * from passengers p right join gensub g on p.PassengerId = g.PassengerId").show
+
+
+//Where Clause :
+-----------------------
+Where clause is used to filer the data in Dataframes or Datasets.
+
+passengersDF.as("p").join(gensubDF.as("g"),passengersDF("PassengerId") === gensubDF("PassengerId"),"right").where("p.PassengerId is not null" ).show
+
+
+//Selecting columns
+-----------------------------------------------------
+passengersDF.select(col("PassengerId"),col("Name"),col("Age"),col("Sex")).show()
+passengersDF.select(col = "PassengerId").show
+passengersDF.map(x => x.getAs[Int]("PassengerId")).toDF().show
+
+//Renaming Columns
+passengersDF.show(4)
+passengersDF.withColumnRenamed("PassengerId","id").withColumnRenamed("Sex","gender").show(4)
+
+//Adding new columns
+--------------------------------------------------------
+//static values
+
+//Adding a constant column is easy. Use the withColumn function and provide the name of the new column and the lit() with the value inside the brackets
+
+passengersDF.withColumn("count",lit(1)).show(5)
+
+//dynamic values
+//You can take the help of any sql function to add dynamic value for the new Column 
+
+passengersDF.withColumn("Name_length",length(passengersDF.col("Name"))).show(5)
+
+------------------------------------------------------------------
+//UDF’s in Spark SQL :
+
+//Spark supports user defined functions , If spark functions are not satisfactory for 
+    your requirements then we can write our functionality.
+
+	import org.apache.spark.sql.functions._
+	val getEligibility  = (s :String) => s.equals("female")
+	val eligibilityUdf = udf(getEligibility)
+	passengersDF.select(passengersDF("Name"),eligibilityUdf(passengersDF("Sex"))).show
+	
+//Registering udfs with SQLContext or HiveContext can help driver to use udfs in queries also
+
+sqlContext.udf.register("checkeligibility",(s:String) => s.equals("female"))
+sqlContext.sql("select Name,checkeligibility(Sex) as eligibility from passengers").show(5)
+
+
+
+
+
+

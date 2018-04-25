@@ -1,0 +1,40 @@
+/***Ananymos Function 
+
+scala> (x:Int) => x*2
+res29: Int => Int = <function1>
+
+scala> res29(5)
+res30: Int = 10
+
+/***Partial Application
+
+
+scala> def adder(m: Int, n: Int) = m + n
+adder: (m: Int, n: Int)Int
+
+scala> val add2 = adder(2, _:Int)
+add2: Int => Int = <function1>
+
+scala> add2(3)
+res38: Int = 5
+
+
+/*** curried function
+
+def add(x:Int) = (y:Int) => x + y
+add(1)(2)   // 3
+add(7)(3)   // 10
+
+/***Closures
+
+scala> val multiplier =(i:Int)=>i*10
+multiplier: Int => Int = <function1>
+
+scala> multiplier(50)
+res37: Int = 500
+
+/*****Procedures
+
+def printMe( ) : Unit = {
+      println("Hello, Scala!")
+   }

@@ -1,0 +1,45 @@
+------------------------------------------------------------
+Install Apache Spark on Unix operation System
+------------------------------------------------------------
+1. wget http://d3kbcqa49mib13.cloudfront.net/spark-2.0.0-bin-hadoop2.7.tgz
+
+2. tar xvf spark-2.0.0-bin-hadoop2.7.tgz
+
+3. sudo mkdir /usr/local/spark
+
+4. sudo cp -r spark-2.0.0-bin-hadoop2.7/* /usr/local/spark
+
+5. export SPARK_EXAMPLES_JAR=/usr/local/spark/examples/jars/spark-examples_2.11-2.0.0.jar
+
+6. PATH=$PATH:$HOME/bin:/usr/local/spark/bin
+
+7.  source ~/.bash_profile
+
+8.  spark-shell
+
+
+You are all set with with your system for performaning hands on exercises. Happy Learning !
+
+
+//How to enable Spark History Server
+
+
+$nano /etc/spark/conf/spark-defaults.conf
+
+//add the below lines or uncomment the lines
+
+spark.eventLog.enabled=true
+spark.eventLog.dir=hdfs://quickstart.cloudera:8020/user/spark/applicationHistory
+spark.yarn.historyServer.address=http://quickstart.cloudera:18088
+
+
+// if the directory doesn't have privileges to read add the privileges.
+
+sudo -u hdfs hadoop fs -chmod -R 777 /user/spark/applicationHistory
+
+//Now check the application history with quickstart.cloudera:18088
+
+
+
+
+

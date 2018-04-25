@@ -1,0 +1,32 @@
+
+List<Person> people;
+
+List<Person> majors = new ArrayList<Person>(people.size());
+List<Person> minors = new ArrayList<Person>(people.size());
+
+for(Person p : people)
+{
+	if(p.getAge < 18)
+	{
+			minors.add(p)
+	}
+	else
+	{
+		majors.add(p)
+	}
+}
+
+
+/**********************************************************/
+
+
+scala> case class Person(name:String,age:Int)
+defined class Person
+
+scala> val people = Array(Person("john",18),Person("smith",24))
+people: Array[Person] = Array(Person(john,18), Person(smith,24))
+
+scala> val(minors,majors) = people partition (_.age <18)
+minors: Array[Person] = Array()
+majors: Array[Person] = Array(Person(john,18), Person(smith,24))
+

@@ -1,0 +1,14 @@
+// How many auctions were held?
+scala> s.sql("select count(distinct(auctionid)) from ebay").show
+// How many bids per item?
+scala> s.sql("select auctionid,item,count(*) from ebay group by auctionid,item").show
+// What's the min number of bids per item? what's the average? what's the max?
+scala> s.sql("select min(a.count) as min ,max(a.count) as max ,avg(a.count)as avg  from (select auctionid,item,count(*) as count from ebay group by auctionid,item ) as a ").show
+// Get the auctions with closing price > 100
+scala> s.sql("select *  from ebay where cast(price as int)>100").show
+
+
+scala> s.sql("SELECT auctionid, item,  count(bid) FROM ebay  GROUP BY auctionid, item").show
+scala> s.sql("SELECT auctionid, MAX(price) FROM ebay  GROUP BY item,auctionid").show
+
+SELECT ebay.auctionid AS auctionid FROM ebay  GROUP BY auctionid
