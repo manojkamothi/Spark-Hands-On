@@ -1,0 +1,133 @@
+Your first Spark application (using Scala and sbt)
+
+This page gives you the exact steps to develop and run a complete Spark application using Scala programming language and sbt as the build tool.
+
+############################ Overview ############################ 
+
+You’re going to use sbt as the project build tool. It uses build.sbt for the project’s description as well as the dependencies, i.e. the version of Apache Spark and others.
+
+With the files in a directory, executing sbt package results in a package that can be deployed onto a Spark cluster using spark-submit.
+
+Installation instructions
+
+############################# Installing & Configure SBT ##########################
+
+sbt download and installation is straightforward, as shown in the commands below:
+
+1)
+	$ wget https://dl.bintray.com/sbt/native-packages/sbt/0.13.8/sbt-0.13.8.tgz
+	$ gunzip sbt-0.13.8.tgz
+	$ tar -xvf sbt-0.13.8.tar
+
+2)
+	$ sudo mv sbt /usr/local [optional]
+
+3)
+	$ cd /usr/local
+
+4)
+	$ ls
+	data                drill    eclipse.desktop  sbt        spark        zookeeper
+	datastax-ddc-3.2.1  eclipse  gnuplot-5.0.1    scala2.10  spark-1.5.2
+
+5)
+	$ sudo nano /etc/profile
+	-> export PATH=$PATH:/usr/local/sbt/bin
+	ctrl + x and agree to save
+
+6)
+	$ source /etc/profile
+
+7)
+	$ sbt about
+
+
+############################# Creating sample spark application:- Word count example ##########################
+
+1) Create a project directory name it as "WordCountExample" followed by directory structure /src/main/scala/
+
+	$ mkdir WordCountExample
+	$ cd WordCountExample
+	$ mkdir -p src/main/scala
+
+2) Create a scala file with following code lines.
+	$ cd src/main/scala
+	$ cd /WordCountExample/src/main/
+	$ gedit Wordcount.scala
+
+	Copy below sample code lines in Wordcount.scala
+
+	import org.apache.spark.SparkConf
+	import org.apache.spark.SparkContext
+	import org.apache.spark.rdd.RDD.rddToPairRDDFunctions
+	object WordCount {
+	  def main(args: Array[String]) = {
+
+	    //Start the Spark context
+	    val conf = new SparkConf()
+	      .setAppName("WordCount")
+	      .setMaster("local")
+	    val sc = new SparkContext(conf)
+
+	    //Read some example file to a test RDD
+	    val test = sc.textFile("input.txt")
+
+	    test.flatMap { line => //for each line
+	      line.split(" ") //split the line in word by word.
+	    }
+	      .map { word => //for each word
+	        (word, 1) //Return a key/value tuple, with the word as key and 1 as value
+	      }
+	      .reduceByKey(_ + _) //Sum all of the value with same key
+	      .saveAsTextFile("output.txt") //Save to a text file
+
+	    //Stop the Spark context
+	    sc.stop
+	  }
+	}
+
+3. In project home directory create a .sbt configuration file with following lines.
+
+	$ ~/WordCountExample/src/main/scala $ cd ~/WordCountExample/
+	$ ~/WordCountExample$ gedit WordcountExample.sbt
+
+	Configuration file lines 
+
+	name := "WordCount Spark Application"
+	version := "1.0"
+	scalaVersion := "2.10.6"
+	libraryDependencies += "org.apache.spark" %% "spark-core" % "1.5.2"
+
+	How to know scala & Spark Liberaray dependancy.
+
+	$ sbt
+	$ libraryDependencies
+	$ set scalaVersion := "2.11.8"  -> Set your version
+	$ set libraryDependencies += "org.apache.spark" % "spark-core_2.11" % "2.3.0"   -> Set your version
+	$ session save
+	$ reload
+
+4.Build/package using sbt:- 
+	
+	~/WordCountExample $ sbt package
+
+	Note:- It may take some time, since it downloads some jar files and internet connection is mandatory. On successful build it creates a jar file(wordcount-spark-application_2.10-1.0.jar) at location "<Project_ome>/target/scala-2.10". (Name of directory and jar file might be different depending on what we have configured in configuration file Wodcountexample.sbt)
+
+5. Deploy generated jar/Submit job to spark cluster:- 
+
+	spark-submit(present in <SPARK_HOME>/bin) executable is used to submit job in spark cluster.Use following command. Download input file from here and place it in home directory.
+
+	~/WordCountExample$ spark-submit --class "WordCount" --master local[2] target/scala-2.10/wordcount-spark-application_2.10-1.0.jar 
+
+	On successful execution, an output directory is created with name "ouput.txt" and file part-00000 contains (word and count) pairs.Execute following command to see output and verify the same.
+
+	cd output.txt/
+	~/WordCountExample/output.txt$ ls
+	part-00000  _SUCCESS
+	
+	~/WordCountExample/output.txt$ head -10 part-00000 
+	(spark,2)
+	(is,1)
+	(Learn,1)
+	(This,1)
+	(time,1)
