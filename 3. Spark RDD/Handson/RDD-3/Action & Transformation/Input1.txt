@@ -1,3 +1,0 @@
-this is my spark class
-in this class we use scala
-spark in an inmemorry processing component
